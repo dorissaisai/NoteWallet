@@ -154,24 +154,32 @@ export class CommandLineWallet {
         },
       )
       .command(
-        "mintnote",
+        "mintnote [count]",
         "Mint Note Token",
-        (yargs) => {},
+        (yargs) => {
+          return yargs.positional('count', {
+            describe: 'Number of times to mint the token',
+            default: 1
+          });
+        },
         async (argv) => {
           if (!this.currentWallet) {
             console.log("No wallet selected");
             return;
           }
-          const result = await mintPowToken(this.currentWallet);
-          if (result?.success) {
-            console.log(
-              "Succeeded:",
-              interpolate(this.currentWallet.explorer!.tx, {
-                txId: result.txId,
-              }),
-            );
-          } else {
-            console.log(result);
+          const count = argv.count as number;
+          for (let i = 0; i < count; i++) {
+            const result = await mintPowToken(this.currentWallet);
+            if (result?.success) {
+              console.log(
+                "Succeeded:",
+                interpolate(this.currentWallet.explorer!.tx, {
+                  txId: result.txId,
+                }),
+              );
+            } else {
+              console.log(result);
+            }
           }
         },
       )
